@@ -1,6 +1,7 @@
 from products import Product
 from store import Store
 
+
 def start(store: Store):
     """
     Starts the user interface for interacting with the store.
@@ -11,7 +12,7 @@ def start(store: Store):
     while True:
         print("\nWelcome to the Store!")
         print("1. List all products in store")
-        print("2. Show total amount in store")
+        print("2. Show total quantity in store")
         print("3. Make an order")
         print("4. Quit")
 

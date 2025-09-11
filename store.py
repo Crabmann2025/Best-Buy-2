@@ -1,38 +1,39 @@
 from typing import List, Tuple
-import products  # make sure products.py is in the same folder
+from products import Product
+
 
 class Store:
     """
     A class to represent a store that holds multiple products.
 
     Attributes:
-        products (List[products.Product]): List of Product instances available in the store.
+        products (List[Product]): List of Product instances available in the store.
     """
 
-    def __init__(self, product_list: List[products.Product]):
+    def __init__(self, product_list: List[Product]):
         """
         Initializes the store with a list of products.
 
         Args:
-            product_list (List[products.Product]): Initial list of products for the store.
+            product_list (List[Product]): Initial list of products for the store.
         """
         self.products = product_list
 
-    def add_product(self, product: products.Product):
+    def add_product(self, product: Product):
         """
         Adds a product to the store.
 
         Args:
-            product (products.Product): The product to add.
+            product (Product): The product to add.
         """
         self.products.append(product)
 
-    def remove_product(self, product: products.Product):
+    def remove_product(self, product: Product):
         """
         Removes a product from the store if it exists.
 
         Args:
-            product (products.Product): The product to remove.
+            product (Product): The product to remove.
         """
         if product in self.products:
             self.products.remove(product)
@@ -44,25 +45,24 @@ class Store:
         Returns:
             int: Total number of items available in the store.
         """
-        total = sum(product.get_quantity() for product in self.products if product.is_active())
-        return total
+        return sum(product.get_quantity() for product in self.products if product.is_active())
 
-    def get_all_products(self) -> List[products.Product]:
+    def get_all_products(self) -> List[Product]:
         """
         Returns a list of all active products in the store.
 
         Returns:
-            List[products.Product]: Active products in the store.
+            List[Product]: Active products in the store.
         """
         return [product for product in self.products if product.is_active()]
 
-    def order(self, shopping_list: List[Tuple[products.Product, int]]) -> float:
+    def order(self, shopping_list: List[Tuple[Product, int]]) -> float:
         """
         Processes an order consisting of multiple products and quantities.
 
         Args:
-            shopping_list (List[Tuple[products.Product, int]]): A list of tuples, each containing
-            a Product and the quantity to purchase.
+            shopping_list (List[Tuple[Product, int]]): A list of tuples, each containing
+                a Product and the quantity to purchase.
 
         Returns:
             float: Total price of the order.

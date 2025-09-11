@@ -96,8 +96,10 @@ class Product:
             raise ValueError("Purchase quantity must be greater than 0.")
         if quantity > self.quantity:
             raise ValueError("Not enough stock available for purchase.")
+
         self.quantity -= quantity
         if self.quantity == 0:
             self.deactivate()
+
         total_price = self.price * quantity
         return total_price
