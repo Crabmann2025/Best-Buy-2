@@ -4,22 +4,14 @@ class Product:
 
     Attributes:
         name (str): The name of the product.
-        price (float): The price of the product.
-        quantity (int): The quantity available in stock.
-        active (bool): Indicates if the product is active (available for purchase).
+        price (float): Price of the product. Must be >= 0.
+        quantity (int): Available quantity. Must be >= 0.
+        active (bool): Whether the product is active in the store.
     """
 
     def __init__(self, name: str, price: float, quantity: int):
         """
-        Initializes a Product instance.
-
-        Args:
-            name (str): Name of the product.
-            price (float): Price of the product. Must be non-negative.
-            quantity (int): Quantity of the product. Must be non-negative.
-
-        Raises:
-            ValueError: If name is empty or price/quantity is negative.
+        Initialize a product instance with validation.
         """
         if not name:
             raise ValueError("Product name cannot be empty.")
@@ -31,75 +23,54 @@ class Product:
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.active = True
+        self.active = True if quantity > 0 else False
 
     def get_quantity(self) -> int:
-        """
-        Returns the current quantity of the product.
-
-        Returns:
-            int: Quantity available.
-        """
+        """Returns the current quantity of the product."""
         return self.quantity
 
     def set_quantity(self, quantity: int):
         """
-        Sets the product quantity. Deactivates the product if quantity reaches 0.
-
-        Args:
-            quantity (int): New quantity. Must be non-negative.
-
-        Raises:
-            ValueError: If quantity is negative.
+        Set the quantity of the product.
+        Automatically deactivates if quantity is 0.
         """
         if quantity < 0:
             raise ValueError("Quantity cannot be negative.")
         self.quantity = quantity
-        if self.quantity == 0:
+        if quantity == 0:
             self.deactivate()
 
     def is_active(self) -> bool:
-        """
-        Checks if the product is active.
-
-        Returns:
-            bool: True if active, False otherwise.
-        """
+        """Returns True if the product is active."""
         return self.active
 
     def activate(self):
-        """Activates the product."""
+        """Activate the product."""
         self.active = True
 
     def deactivate(self):
-        """Deactivates the product."""
+        """Deactivate the product."""
         self.active = False
 
     def show(self):
         """Prints the product details in a readable format."""
         print(f"{self.name}, Price: {self.price}, Quantity: {self.quantity}")
 
-    def buy(self, quantity: int) -> float:
+    def buy(self, requested_quantity: int) -> float:
         """
         Purchases a specified quantity of the product.
 
         Args:
-            quantity (int): Number of items to buy. Must be positive and not exceed available stock.
+            requested_quantity (int): Number of items to buy.
 
         Returns:
-            float: Total price of the purchase.
-
-        Raises:
-            ValueError: If quantity is invalid or exceeds available stock.
+            float: Total price for the purchased items.
         """
-        if quantity <= 0:
-            raise ValueError("Purchase quantity must be greater than 0.")
-        if quantity > self.quantity:
-            raise ValueError("Not enough stock available for purchase.")
+        if requested_quantity <= 0:
+            raise ValueError("Quantity must be positive.")
+        if requested_quantity > self.get_quantity():
+            raise ValueError("Not enough stock available.")
 
-        self.quantity -= quantity
-        if self.quantity == 0:
-            self.deactivate()
-
-        total_price = self.price * quantity
+        total_price = requested_quantity * self.price
+        self.set_quantity(self.get_quantity() - requested_quantity)
         return total_price
