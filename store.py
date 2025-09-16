@@ -1,25 +1,32 @@
 from typing import List, Tuple
-from products import Product
+from product_classes import Product
+
 
 class Store:
     """
-    A class to represent a store containing multiple products.
+        A store containing products. Supports product management, ordering,
+        and several magic methods for convenience.
     """
 
-    def __init__(self, product_list: List[Product]):
-        """
-        Initializes the store with a list of products.
+    def __init__(self, product_list: List[Product] = None):
+        """ Initialize a Store instance with an optional list of products."""
+        self.products = product_list if product_list else []
 
-        Args:
-            product_list (List[Product]): Initial product list.
+    # Order processing as static method
+    @staticmethod
+    def order(shopping_list: List[Tuple[Product, int]]) -> float:
         """
-        if not all(isinstance(p, Product) for p in product_list):
-            raise TypeError("All items in product_list must be Product instances.")
-        self.products = product_list
+            Process an order given a shopping list of products and quantities.
+        """
+        total = 0.0
+        for product, qty in shopping_list:
+            total += product.buy(qty)
+        return total
 
+    # Product management
     def add_product(self, product: Product):
         """
-        Adds a product to the store, ensuring no duplicates by name.
+            Add a product to the store if it doesn't already exist.
         """
         if any(p.name == product.name for p in self.products):
             print(f"Product '{product.name}' already exists in the store.")
@@ -28,7 +35,7 @@ class Store:
 
     def remove_product(self, product: Product):
         """
-        Removes a product from the store if it exists.
+            Remove a product from the store.
         """
         for p in self.products:
             if p.name == product.name:
@@ -37,24 +44,32 @@ class Store:
         print(f"Product '{product.name}' not found in the store.")
 
     def get_total_quantity(self) -> int:
-        """Returns the total quantity of all active products."""
-        return sum(p.get_quantity() for p in self.products if p.is_active())
+        """
+            Get the total quantity of all active products in the store.
+        """
+        return sum(p.quantity for p in self.products if p.is_active)
 
     def get_all_products(self) -> List[Product]:
-        """Returns a list of all active products in the store."""
-        return [p for p in self.products if p.is_active()]
-
-    def order(self, shopping_list: List[Tuple[Product, int]]) -> float:
         """
-        Processes an order consisting of multiple products.
-
-        Args:
-            shopping_list (List[Tuple[Product, int]]): List of (Product, quantity).
-
-        Returns:
-            float: Total cost of the order.
+            Get a list of all active products in the store.
         """
-        total = 0
-        for product, qty in shopping_list:
-            total += product.buy(qty)
-        return total
+        return [p for p in self.products if p.is_active]
+
+
+    # Magic methods
+    def __contains__(self, item):
+        """ Check if a product is in the store."""
+        return item in self.products
+
+    def __add__(self, other):
+        """
+            Combine two stores into a new store containing all products.
+        """
+        if isinstance(other, Store):
+            combined_products = self.products + other.products
+            return Store(combined_products)
+        return NotImplemented
+
+    def __str__(self):
+        """ Return a string representation of all products in the store."""
+        return "\n".join(str(p) for p in self.products)
