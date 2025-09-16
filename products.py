@@ -74,3 +74,64 @@ class Product:
         total_price = requested_quantity * self.price
         self.set_quantity(self.get_quantity() - requested_quantity)
         return total_price
+
+
+class NonStockedProduct(Product):
+    """
+    Represents a product that is not physically stocked (e.g., software licenses).
+    Quantity is always 0 and cannot be changed.
+    """
+
+    def __init__(self, name: str, price: float):
+        # Always set quantity = 0
+        super().__init__(name, price, quantity=0)
+
+    def set_quantity(self, quantity: int):
+        """Non-stocked products cannot change quantity."""
+        raise ValueError("Non-stocked products do not track quantity.")
+
+    def get_quantity(self) -> int:
+        """Always return 0."""
+        return 0
+
+    def buy(self, requested_quantity: int) -> float:
+        """
+        Non-stocked products can always be purchased, regardless of quantity.
+        """
+        if requested_quantity <= 0:
+            raise ValueError("Quantity must be positive.")
+        return requested_quantity * self.price
+
+    def show(self):
+        """Show product details with info about being non-stocked."""
+        print(f"{self.name}, Price: {self.price}, Non-stocked product (unlimited availability)")
+
+
+class LimitedProduct(Product):
+    """
+    Represents a product that can only be purchased up to a maximum per order.
+    """
+
+    def __init__(self, name: str, price: float, quantity: int, maximum: int):
+        super().__init__(name, price, quantity)
+        if maximum <= 0:
+            raise ValueError("Maximum per order must be greater than 0.")
+        self.maximum = maximum
+
+    def buy(self, requested_quantity: int) -> float:
+        """Ensure purchase does not exceed the maximum allowed per order."""
+        if requested_quantity > self.maximum:
+            raise ValueError(
+                f"You can only buy up to {self.maximum} of {self.name} per order."
+            )
+        return super().buy(requested_quantity)
+
+    def show(self):
+        """Show product details with max-per-order information."""
+        print(
+            f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, "
+            f"Max per order: {self.maximum}"
+        )
+
+
+
